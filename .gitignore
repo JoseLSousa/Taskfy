@@ -1,0 +1,15 @@
+.vscode/
+
+# Server
+/Server/bin/
+/Server/obj/
+/Server/appsettings.json
+
+# Client
+/Client/node_modules/
+/Client/.angular/
+/Client/.vscode/
+/Client/package-lock.json
+
+
+
