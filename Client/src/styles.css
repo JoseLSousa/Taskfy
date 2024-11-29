@@ -1,3 +1,11 @@
-body{
+@import url('https://fonts.googleapis.com/css2?family=Arima:wght@100..700&family=Dancing+Script:wght@400..700&family=Lato:wght@400;700&family=Parkinsans:wght@300..800&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:wght@700&display=swap');
+
+body {
+    background-image: url(/background.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
     height: 100vh;
+    font-family: "Raleway", sans-serif !important;
 }
