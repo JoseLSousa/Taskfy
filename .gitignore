@@ -10,6 +10,7 @@
 /Client/.angular/
 /Client/.vscode/
 /Client/package-lock.json
+/Client/src/environments/environment.ts
 
 
 
