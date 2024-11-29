@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthService } from '../../Services/auth.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -18,20 +20,64 @@ export class HomeComponent {
   loginForm!: FormGroup
 
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private authService: AuthService) {
     this.registerForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(8)]]
-    })
+    }),
 
-    this.loginForm = this.fb.group({
-      email: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(8)]]
-    })
+      this.loginForm = this.fb.group({
+        email: ['', Validators.required],
+        password: ['', [Validators.required, Validators.minLength(8)]]
+      })
   }
   changeState(state: string): void {
     this.currentState = state
+  }
+
+  register(): void {
+    if (this.registerForm.invalid) {
+      alert('Erro')
+      return
+    }
+    this.authService.register(this.registerForm.value).subscribe(
+      (res) => {
+        alert('Cadastrado com sucesso!')
+        this.currentState = 'login'
+      },
+      (err) => {
+        const validationErrors = err.error?.errors
+
+        if (validationErrors) {
+          const errorMessages = Object.values(validationErrors)
+          .flat()
+          .join('\n')
+          alert(errorMessages)
+          
+        }else {
+          alert("Ocorreu um erro. Tente novamente mais tarde.")
+        }
+       }
+    )
+  }
+
+  login(): void {
+    if (this.loginForm.invalid) {
+      alert('erro')
+      return
+    }
+    this.authService.login(this.loginForm.value).subscribe(
+      (res) => {
+        alert(res.accessToken)
+      },
+      (err) => {
+        alert('verifique suas credenciais',)
+        console.log(err.status)
+        this.currentState = "login"
+      }
+
+    )
   }
 }

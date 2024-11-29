@@ -17,7 +17,7 @@
 
             <div class="p-md-5 d-flex flex-column w-100" *ngIf="currentState === 'register'">
                 <h3 class="mb-3 fw-bolder">Cadastre-se</h3>
-                <form [formGroup]="registerForm">
+                <form [formGroup]="registerForm" (ngSubmit)="register()">
                     <div class="row g-2">
                         <div class="col mb-3">
                             <label for="name" class="form-label fw-bold">Nome</label>
@@ -37,14 +37,14 @@
                         <input type="password" class="form-control" id="password" formControlName="password">
                     </div>
 
-                    <button class="btn btn-warning w-100 fw-bold" [disabled]="registerForm.invalid">Cadastre-se</button>
+                    <button type="submit" class="btn btn-warning w-100 fw-bold" [disabled]="registerForm.invalid">Cadastre-se</button>
                 </form>
                 <button class="align-self-center mt-3 login fw-bold" (click)="changeState('login')">Já tem uma conta?
                     Faça
                     login</button>
             </div>
             <div class="p-md-5 d-flex flex-column w-100" *ngIf="currentState === 'login'">
-                <form [formGroup]="loginForm">
+                <form [formGroup]="loginForm" (ngSubmit)="login()">
                     <h3 class="mb-3 fw-bolder">Login</h3>
                     <div class="input-group mb-2">
                         <i class="bi bi-person fs-4 input-group-text"></i>
@@ -56,7 +56,7 @@
                             formControlName="password">
                     </div>
 
-                    <button class="btn btn-warning w-100 fw-bold" [disabled]="loginForm.invalid">Login</button>
+                    <button type="submit" class="btn btn-warning w-100 fw-bold" [disabled]="loginForm.invalid">Login</button>
                     <div>
                         <button class="mx-auto mt-3 login fw-bold">Esqueceu sua
                             senha?</button>
