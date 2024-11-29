@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
@@ -17,7 +18,11 @@ builder.Services.AddCors(opt =>
      );
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+.AddJsonOptions(opt =>
+{
+    opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 {
