@@ -10,6 +10,6 @@ namespace Server.Data
 {
     public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<User>(options)
     {
-        
+        public DbSet<TaskModel> Tasks { get; set; }
     }
 }
