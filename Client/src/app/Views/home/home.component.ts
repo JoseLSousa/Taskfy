@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../Services/auth.service';
 import { Observable } from 'rxjs';
+import { TokenService } from '../../Services/token.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -20,7 +22,7 @@ export class HomeComponent {
   loginForm!: FormGroup
 
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private tokenService: TokenService, private router: Router) {
     this.registerForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -70,7 +72,9 @@ export class HomeComponent {
     }
     this.authService.login(this.loginForm.value).subscribe(
       (res) => {
-        alert(res.accessToken)
+        this.tokenService.saveAcessToken(res.accessToken)
+        this.tokenService.saveRefreshToken(res.refreshToken)
+        this.router.navigate(["/dashboard"])
       },
       (err) => {
         alert('verifique suas credenciais',)
