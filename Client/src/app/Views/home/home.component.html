@@ -1,1 +1,81 @@
-<p>home works!</p>
+<div class="container-fluid p-3" style="height: 100vh !important;">
+    <div class="row h-100 d-flex justify-content-evenly">
+        <div class="col-5 col-md-5 d-flex justify-content-center align-items-center">
+            <img src="rocket.png" alt="" class="img-fluid">
+
+        </div>
+        <div class="col-10 col-md-5 d-flex justify-content-center align-items-center rounded-4 shadow-lg">
+            <div class="p-5 d-flex flex-column" *ngIf="currentState === 'description'">
+
+                <h4 class="fw-bolder">Transforme Sua Produtividade com o Taskfy</h4>
+                <p>Descubra uma forma simples e eficaz de organizar suas tarefas, manter o foco e alcançar seus
+                    objetivos sem estresse—comece agora com o Taskfy!</p>
+                <a class="btn btn-warning w-100 fw-bold mt-5" (click)="changeState('register')">Começar</a>
+                <button class="align-self-center mt-3 login fw-bold" (click)="changeState('login')">Já tem uma conta? Faça
+                    login</button>
+            </div>
+
+            <div class="p-md-5 d-flex flex-column w-100" *ngIf="currentState === 'register'">
+                <h3 class="mb-3 fw-bolder">Cadastre-se</h3>
+                <form [formGroup]="registerForm">
+                    <div class="row g-2">
+                        <div class="col mb-3">
+                            <label for="name" class="form-label fw-bold">Nome</label>
+                            <input type="text" class="form-control" id="name" formControlName="firstName">
+                        </div>
+                        <div class="col mb-3">
+                            <label for="lastName" class="form-label fw-bold">Sobrenome</label>
+                            <input type="text" class="form-control" id="lastName" formControlName="lastName">
+                        </div>
+                    </div>
+                    <div class="col mb-3">
+                        <label for="email" class="form-label fw-bold">Email</label>
+                        <input type="email" class="form-control" id="email" formControlName="email">
+                    </div>
+                    <div class="col mb-3">
+                        <label for="password" class="form-label fw-bold">Senha</label>
+                        <input type="password" class="form-control" id="password" formControlName="password">
+                    </div>
+
+                    <button class="btn btn-warning w-100 fw-bold" [disabled]="registerForm.invalid">Cadastre-se</button>
+                </form>
+                <button class="align-self-center mt-3 login fw-bold" (click)="changeState('login')">Já tem uma conta?
+                    Faça
+                    login</button>
+            </div>
+            <div class="p-md-5 d-flex flex-column w-100" *ngIf="currentState === 'login'">
+                <form [formGroup]="loginForm">
+                    <h3 class="mb-3 fw-bolder">Login</h3>
+                    <div class="input-group mb-2">
+                        <i class="bi bi-person fs-4 input-group-text"></i>
+                        <input type="email" class="form-control" placeholder="Email" formControlName="email">
+                    </div>
+                    <div class="input-group mb-3">
+                        <i class="bi bi-key fs-4 input-group-text"></i>
+                        <input type="password" class="form-control" id="password" placeholder="Senha"
+                            formControlName="password">
+                    </div>
+
+                    <button class="btn btn-warning w-100 fw-bold" [disabled]="loginForm.invalid">Login</button>
+                    <div>
+                        <button class="mx-auto mt-3 login fw-bold">Esqueceu sua
+                            senha?</button>
+                    </div>
+                    <div class="d-flex mt-3">
+                        <hr class="w-100 ">
+                        <p class="fw-bolder mx-2">Ou</p>
+                        <hr class="w-100">
+                    </div>
+                    <div class="d-flex justify-content-evenly mb-3">
+                        <i class="bi bi-google fs-3 mt-1 icon"></i>
+                        <i class="bi bi-facebook fs-3 mt-1 icon"></i>
+
+                    </div>
+                </form>
+                <button class="align-self-center mt-3 login fw-bold" (click)="changeState('register')">Não tem uma
+                    conta? Cadastre-se</button>
+            </div>
+        </div>
+
+    </div>
+</div>

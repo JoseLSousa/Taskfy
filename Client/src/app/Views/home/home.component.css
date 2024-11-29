@@ -1,0 +1,19 @@
+.login {
+    color: black;
+    text-decoration: none;
+    background: none;
+    border: none;
+
+    &:hover {
+        color: rgb(112, 110, 110) !important;
+    }
+
+}
+
+hr {
+    margin-top: 12px;
+}
+
+.icon:hover {
+    color: rgb(112, 110, 110) !important;
+}
