@@ -6,8 +6,8 @@ export const authGuard: CanActivateFn = async (route, state) => {
   const tokenService = inject(TokenService);
   const router = inject(Router);
 
-  // Verifique se o usuário está autenticado
-  const isLoggedIn = await tokenService.isLoggedIn();
+  // Mostra algum tipo de carregamento ou espera enquanto verifica a autenticação
+  const isLoggedIn = await tokenService.isLoggedIn().toPromise();  // Aguarda a resolução
 
   if (isLoggedIn) {
     return true;  // Se estiver autenticado, permite o acesso
@@ -15,5 +15,6 @@ export const authGuard: CanActivateFn = async (route, state) => {
 
   // Se não estiver autenticado, redireciona para o login
   router.navigate([''], { queryParams: { returnUrl: state.url } });
+
   return false;
 };
