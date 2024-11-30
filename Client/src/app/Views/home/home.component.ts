@@ -72,7 +72,7 @@ export class HomeComponent {
     }
     this.authService.login(this.loginForm.value).subscribe(
       (res) => {
-        this.tokenService.saveAcessToken(res.accessToken)
+        this.tokenService.saveAcessToken(res.accessToken, res.expiresIn)
         this.tokenService.saveRefreshToken(res.refreshToken)
         this.router.navigate(["/dashboard"])
       },
