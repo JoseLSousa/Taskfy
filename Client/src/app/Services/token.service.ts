@@ -82,7 +82,7 @@ export class TokenService {
 
     const body = { refreshToken };
 
-    return this.http.post<any>(`${this.apiUrl}/refresh`, body, { observe: 'response' }).pipe(
+    return this.http.post<any>(`${this.apiUrl}refresh`, body, { observe: 'response' }).pipe(
       switchMap((response) => {
         if (response?.status === 200 && response.body?.accessToken && response.body?.expiresIn) {
           this.saveAcessToken(response.body.accessToken, response.body.expiresIn); // Salva o novo token
