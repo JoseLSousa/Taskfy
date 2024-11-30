@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Server.Data;
 using Server.Models;
 
@@ -41,6 +43,21 @@ namespace Server.Controllers
             if (task == null) return NotFound();
 
             return Ok(task);
+        }
+        [HttpGet("today")]
+        public async Task<IActionResult> TodayTasksAsync()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null) return Unauthorized("User not autenticated");
+
+            var today = DateTime.Today;
+
+            var tasks = await _context.Tasks
+            .Where(t => t.UserId == userId && t.DueDate.Date == today)
+            .ToListAsync();
+
+            return Ok(tasks);
         }
     }
 }
