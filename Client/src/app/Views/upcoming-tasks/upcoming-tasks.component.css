@@ -1,0 +1,15 @@
+#openSidebar{
+    background: none;
+    border: none;
+}
+
+.Task{
+    &:hover{
+        background-color: rgb(197, 197, 197);
+    }
+}
+
+.badge{
+    border: 1px solid gray !important;
+    color: black;
+}
