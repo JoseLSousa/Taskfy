@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
+using Server.Dto;
 using Server.Models;
 
 namespace Server.Controllers
@@ -16,23 +17,24 @@ namespace Server.Controllers
         private readonly UserManager<User> _userManager = userManager;
         private readonly ApplicationDbContext _context = context;
 
-        [HttpPost]
-        public async Task<IActionResult> AddTask([FromBody] TaskModel taskModel)
+        [HttpPost("add")]
+        public async Task<IActionResult> AddTask([FromBody] TaskDto taskDto)
         {
-            if (taskModel == null) return BadRequest("Task data is Invalid");
-
-            var userId = User.Identity?.Name;
-
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null) return Unauthorized("User not authenticated");
+            var task = new TaskModel
+            {
+                Title = taskDto.Title,
+                Description = taskDto.Description,
+                Priority = taskDto.Priority,
+                StartDate = taskDto.StartDate,
+                EndDate = taskDto.EndDate,
+                UserId = userId
+            };
 
-            var user = await _userManager.FindByNameAsync(userId);
-            if (user == null) return Unauthorized("User not Found");
-
-            taskModel.UserId = user.Id;
-
-            _context.Tasks.Add(taskModel);
+            _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetTask), new { id = taskModel.Id }, taskModel);
+            return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
         }
 
         [HttpGet("{id}")]
@@ -44,20 +46,62 @@ namespace Server.Controllers
 
             return Ok(task);
         }
-        [HttpGet("today")]
-        public async Task<IActionResult> TodayTasksAsync()
+        [HttpGet]
+        public async Task<IActionResult> GetTasksAsync()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (userId == null) return Unauthorized("User not autenticated");
+            if (userId == null) return Unauthorized("User not authenticated");
 
             var today = DateTime.Today;
 
             var tasks = await _context.Tasks
-            .Where(t => t.UserId == userId && t.DueDate.Date == today)
+            .Where(t => t.UserId == userId)
             .ToListAsync();
 
             return Ok(tasks);
+        }
+        
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateTaskAsync(int id, TaskModel updatedTask)
+        {
+
+            if (id != updatedTask.Id) return BadRequest("O ID da tarefa não corresponde ao ID fornecido");
+            var existingTask = await _context.Tasks.FindAsync(id);
+            if (existingTask == null) return NotFound("Tarefa não encontrada");
+
+            existingTask.Title = updatedTask.Title;
+            existingTask.Description = updatedTask.Description;
+            existingTask.Priority = updatedTask.Priority;
+            existingTask.StartDate = updatedTask.StartDate;
+            existingTask.EndDate = updatedTask.EndDate;
+
+            _context.Entry(existingTask).State = EntityState.Modified;
+
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+
+                if (!TaskExists(id))
+                {
+                    return NotFound("Erro ao atualizar tarefa, ela não existe");
+                }
+                else
+                {
+                    throw;
+
+                }
+            }
+            return NoContent();
+
+        }
+        private bool TaskExists(int id)
+        {
+            return _context.Tasks.Any(e => e.Id == id);
         }
     }
 }
