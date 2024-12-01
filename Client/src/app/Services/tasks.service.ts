@@ -12,9 +12,19 @@ export class TasksService {
 
   constructor(private http: HttpClient) { }
 
-  listTodayTasks(): Observable<any> {
-    const tasks = this.http.get<any>(`${this.apiUrl}api/Tasks/today`)
-    console.log("TaskService",tasks);
-    return tasks
+  listTasks(): Observable<Task[]> {
+
+    return this.http.get<Task[]>(`${this.apiUrl}api/Tasks`)
   }
+
+  createTask(data: Task): Observable<Task> {
+    return this.http.post<Task>(`${this.apiUrl}api/Tasks/add`, data)
+  }
+
+  updateTask(task: Task): Observable<Task> {
+    return this.http.put<Task>(`${this.apiUrl}api/Tasks/${task.id}`,task)
+  }
+ 
 }
+
+
