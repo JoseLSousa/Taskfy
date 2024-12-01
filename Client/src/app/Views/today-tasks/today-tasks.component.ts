@@ -14,5 +14,25 @@ import { CommonModule } from '@angular/common';
   styleUrl: './today-tasks.component.css'
 })
 export class TodayTasksComponent {
+  tasks: Task[] = [];
 
+  constructor(private tasksServices: TasksService) {
+
+  }
+  loadTasks() {
+    this.tasksServices.listTasks().subscribe(
+      (tasks) => {
+        const today = new Date().toISOString().split('T')[0];
+
+        this.tasks = tasks.filter((task) => {
+          const tasks = new Date(task.endDate).toISOString().split('T')[0];
+          return tasks === today
+        })
+      }
+    )
+  }
+
+  ngOnInit(): void {
+    this.loadTasks();
+  }
 }
