@@ -74,7 +74,7 @@ export class TokenService {
 
   // Realiza a renovação do token de acesso usando o refresh token
   newAccessToken(): Observable<boolean> {
-    const refreshToken = this.cookieService.get('applicationCookie');
+    const refreshToken = CryptoJs.AES.decrypt(this.cookieService.get('applicationCookie'), this.secretKey).toString(CryptoJs.enc.Utf8);
     if (!refreshToken) {
       console.warn('Nenhum refresh token encontrado.');
       return of(false);
@@ -100,7 +100,7 @@ export class TokenService {
 
   // Redireciona para a página de login
   redirectToLogin() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['']);
   }
 
   // Agendamento de silent refresh
