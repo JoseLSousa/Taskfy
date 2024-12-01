@@ -1,0 +1,49 @@
+<div class="container mt-3 h-100 rounded-3 shadow" style="background-color: white;">
+    <div class="row d-flex align-items-center">
+        <div class="col-12 col-md-3 d-flex justify-content-center mb-3 mb-md-0">
+            <button class="btn btn-primary me-1" href="#offcanvasSidebar" data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
+                <i class="bi bi-list"></i>
+                Menu
+            </button>
+            <button class="btn btn-primary" >
+                <i class="bi bi-plus-square"></i> Nova Tarefa
+            </button>
+        </div>
+        <div class="col-9 d-flex">
+            <div class="d-flex align-items-center">
+                <div class="fs-1 me-3 fw-bold">Hoje</div>
+                <div class="fs-1 badge py-1 px-2 text-dark border border-dark">{{tasks.length}}</div>
+            </div>
+        </div>
+        <hr>
+    </div>
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-11 border p-3 rounded-3">
+            <h6>Hoje</h6>
+            <div class="list-group">
+                <div class="list-group mb-1" *ngFor="let task of tasks">
+                    <button class="list-group-item d-flex justify-content-between align-items-center Task">
+                        <div class="d-flex">
+                            <input type="checkbox" />
+                            <div class="ms-3 d-flex flex-column align-content-start">{{task.title}}
+                                <p class="justify-content-start"></p>
+                                <div class="d-flex">
+                                    <i class="bi bi-calendar-x me-2"></i>
+                                    <p class="mb-0">{{ task.endDate | date: 'dd/MM/yyyy' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <i class="bi bi-caret-right"></i>
+                    </button>
+                </div>
+                <div *ngIf="tasks.length === 0" class="text-muted text-center mt-2">
+                    Nenhuma tarefa para hoje.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<app-menu-side-bar></app-menu-side-bar>
