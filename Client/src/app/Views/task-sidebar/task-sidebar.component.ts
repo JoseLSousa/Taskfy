@@ -23,7 +23,7 @@ export class TaskSidebarComponent implements OnChanges {
 
   constructor(private fb: FormBuilder, private tasksService: TasksService) {
     this.taskForm = this.fb.group({
-      id: [null],
+      id: [],
       title: ['', Validators.required],
       description: ['', Validators.required],
       priority: ['Média', Validators.required],
@@ -77,7 +77,29 @@ export class TaskSidebarComponent implements OnChanges {
           },
         })
 
+      } else {
+
+        const taskData = {
+          id: this.task?.id,
+          title: this.taskForm.value.title,
+          description: this.taskForm.value.description,
+          priority: this.taskForm.value.priority,
+          startDate: this.taskForm.value.startDate,
+          endDate: this.taskForm.value.endDate,
+        }
+
+        this.tasksService.updateTask(this.task?.id, taskData).subscribe({
+          next: () => {
+
+            this.closeSidebar()
+          },
+          error(err) {
+            console.warn(err.error.errors)
+          },
+        })
       }
+
+
     } else {
       console.log('Formulário inválido', this.taskForm.errors);
     }

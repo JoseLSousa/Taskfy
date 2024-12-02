@@ -97,7 +97,7 @@ export class UpcomingTasksComponent implements OnInit {
   }
 
   deleteTask(taskId: string | undefined) {
-
+    console.log(taskId)
     if (!taskId) return;
 
     if (confirm('Deseja excluir essa tarefa?')) {
