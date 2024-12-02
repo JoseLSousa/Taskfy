@@ -17,14 +17,17 @@ export class TasksService {
     return this.http.get<Task[]>(`${this.apiUrl}api/Tasks`)
   }
 
-  createTask(data: Task): Observable<Task> {
+  createTask(data: any): Observable<Task> {
     return this.http.post<Task>(`${this.apiUrl}api/Tasks/add`, data)
   }
 
   updateTask(task: Task): Observable<Task> {
-    return this.http.put<Task>(`${this.apiUrl}api/Tasks/${task.id}`,task)
+    return this.http.put<Task>(`${this.apiUrl}api/Tasks/${task.id}`, task)
   }
- 
+
+  deleteTask(taskId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}api/Tasks/delete/${taskId}`)
+  }
 }
 
 
