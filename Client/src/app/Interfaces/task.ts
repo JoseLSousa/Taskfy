@@ -3,6 +3,7 @@ export interface Task {
     title: string;
     description: string;
     priority: string;
-    startDate: Date;
+    startDate: string | Date
     endDate: Date;
+    isFullDay: boolean;
 }
