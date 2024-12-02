@@ -16,26 +16,39 @@ namespace Server.Controllers
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly ApplicationDbContext _context = context;
-
         [HttpPost("add")]
         public async Task<IActionResult> AddTask([FromBody] TaskDto taskDto)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null) return Unauthorized("User not authenticated");
-            var task = new TaskModel
+            if (!ModelState.IsValid)
             {
-                Title = taskDto.Title,
-                Description = taskDto.Description,
-                Priority = taskDto.Priority,
-                StartDate = taskDto.StartDate,
-                EndDate = taskDto.EndDate,
-                UserId = userId
-            };
+                return BadRequest(ModelState);
+            }
 
-            _context.Tasks.Add(task);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null) return Unauthorized("Usuário não autenticado");
+
+                var task = new TaskModel
+                {
+                    Title = taskDto.Title,
+                    Description = taskDto.Description,
+                    Priority = taskDto.Priority,
+                    StartDate = taskDto.StartDate,
+                    EndDate = taskDto.EndDate,
+                    UserId = userId
+                };
+
+                _context.Tasks.Add(task);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno ao adicionar tarefa: {ex.Message}");
+            }
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTask(int id)
@@ -46,6 +59,7 @@ namespace Server.Controllers
 
             return Ok(task);
         }
+        
         [HttpGet]
         public async Task<IActionResult> GetTasksAsync()
         {
@@ -62,64 +76,70 @@ namespace Server.Controllers
             return Ok(tasks);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTaskAsync(int id, TaskModel updatedTask)
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateTaskAsync(int id, [FromBody] TaskDto updatedTask)
         {
+            if (id != updatedTask.Id)
+                return BadRequest("O ID da tarefa não corresponde ao ID fornecido.");
 
-            if (id != updatedTask.Id) return BadRequest("O ID da tarefa não corresponde ao ID fornecido");
-            var existingTask = await _context.Tasks.FindAsync(id);
-            if (existingTask == null) return NotFound("Tarefa não encontrada");
-
-            existingTask.Title = updatedTask.Title;
-            existingTask.Description = updatedTask.Description;
-            existingTask.Priority = updatedTask.Priority;
-            existingTask.StartDate = updatedTask.StartDate;
-            existingTask.EndDate = updatedTask.EndDate;
-
-            _context.Entry(existingTask).State = EntityState.Modified;
-
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             try
             {
+                var existingTask = await _context.Tasks.FindAsync(id);
+                if (existingTask == null)
+                    return NotFound("Tarefa não encontrada.");
+
+                existingTask.Title = updatedTask.Title;
+                existingTask.Description = updatedTask.Description;
+                existingTask.Priority = updatedTask.Priority;
+                existingTask.StartDate = updatedTask.StartDate;
+                existingTask.EndDate = updatedTask.EndDate;
+
+                _context.Entry(existingTask).State = EntityState.Modified;
+
                 await _context.SaveChangesAsync();
+
+                return NoContent();
             }
             catch (DbUpdateConcurrencyException)
             {
-
                 if (!TaskExists(id))
-                {
-                    return NotFound("Erro ao atualizar tarefa, ela não existe");
-                }
+                    return NotFound("Erro ao atualizar a tarefa. Ela não existe mais.");
                 else
-                {
                     throw;
-
-                }
             }
-            return NoContent();
-
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno ao atualizar tarefa: {ex.Message}");
+            }
         }
+
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteTaskAsync(int id)
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var task = await _context.Tasks.FindAsync(id);
+            if (userId == null) return Unauthorized("Usuário não autenticado");
 
-            if (task == null) return NotFound("Tarefa não encontrada");
+            var task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
+            if (task == null) return NotFound("Tarefa não encontrada ou você não tem permissão para excluí-la.");
 
             try
             {
                 _context.Tasks.Remove(task);
-
                 await _context.SaveChangesAsync();
 
                 return NoContent();
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                return StatusCode(500, ex);
+                return StatusCode(500, $"Erro interno ao deletar tarefa: {ex.Message}");
             }
         }
+
 
         private bool TaskExists(int id)
         {
