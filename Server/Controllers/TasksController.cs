@@ -61,7 +61,7 @@ namespace Server.Controllers
 
             return Ok(tasks);
         }
-        
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTaskAsync(int id, TaskModel updatedTask)
         {
@@ -99,6 +99,28 @@ namespace Server.Controllers
             return NoContent();
 
         }
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteTaskAsync(int id)
+        {
+
+            var task = await _context.Tasks.FindAsync(id);
+
+            if (task == null) return NotFound("Tarefa não encontrada");
+
+            try
+            {
+                _context.Tasks.Remove(task);
+
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
         private bool TaskExists(int id)
         {
             return _context.Tasks.Any(e => e.Id == id);
